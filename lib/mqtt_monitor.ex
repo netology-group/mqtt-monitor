@@ -54,17 +54,23 @@ defmodule MqttMonitor do
   end
 
   def on_subscribe(_, {_, client_id}, topics) do
-    publish(%{type: "subscribe", client_id: client_id, topics: topics})
+    publish(%{type: "subscribe", client_id: client_id, topics: dump_topics(topics)})
     :ok
   end
 
   def on_subscribe_m5(_, {_, client_id}, topics, properties) do
-    publish(%{type: "subscribe_m5", client_id: client_id, topics: topics, properties: properties})
+    publish(%{
+      type: "subscribe_m5",
+      client_id: client_id,
+      topics: dump_topics(topics),
+      properties: properties
+    })
+
     :ok
   end
 
   def on_unsubscribe(_, {_, client_id}, topics) do
-    publish(%{type: "unsubscribe", client_id: client_id, topics: topics})
+    publish(%{type: "unsubscribe", client_id: client_id, topics: dump_topics(topics)})
     :ok
   end
 
@@ -72,7 +78,7 @@ defmodule MqttMonitor do
     publish(%{
       type: "unsubscribe_m5",
       client_id: client_id,
-      topics: topics,
+      topics: dump_topics(topics),
       properties: properties
     })
 
@@ -158,9 +164,14 @@ defmodule MqttMonitor do
 
   defp publish(event) do
     event = event |> Map.put(:timestamp, DateTime.to_iso8601(DateTime.utc_now()))
+    IO.inspect(event, label: "!!!")
 
     Registry.dispatch(MqttMonitor.PubSub, "events", fn entries ->
       for {pid, _} <- entries, do: pid |> send({:event, event})
     end)
+  end
+
+  defp dump_topics(topics) do
+    for {topic, _} <- topics, do: topic
   end
 end
