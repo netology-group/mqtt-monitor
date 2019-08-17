@@ -164,7 +164,6 @@ defmodule MqttMonitor do
 
   defp publish(event) do
     event = event |> Map.put(:timestamp, DateTime.to_iso8601(DateTime.utc_now()))
-    IO.inspect(event, label: "!!!")
 
     Registry.dispatch(MqttMonitor.PubSub, "events", fn entries ->
       for {pid, _} <- entries, do: pid |> send({:event, event})
