@@ -1,0 +1,10 @@
+.toggler {
+  background-color: #fff;
+  border: 1px solid #cccccc;
+  cursor: pointer;
+  display: inline-block;
+  left: -0.5em;
+  position: relative;
+  text-align:center;
+  width: 1em;
+}

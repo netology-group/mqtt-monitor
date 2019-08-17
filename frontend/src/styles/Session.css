@@ -1,0 +1,28 @@
+.indicator {
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+.indicator.indicator-on {
+  color: #0f0;
+}
+
+.indicator.indicator-off {
+  color: #f00;
+}
+
+ul.sessions {
+  list-style: none;
+  padding: 0;
+}
+
+ul.sessions > li {
+  border-left: 1px solid #cccccc;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
+}
+
+.session-details {
+  margin-left: 2em;
+  margin-top: 1em;
+}

@@ -1,0 +1,26 @@
+.tabs > ul.tabs-toggler {
+  border-bottom: 1px solid #cccccc;
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tabs ul.tabs-toggler > li {
+  cursor: pointer;
+  margin-bottom: -1px;
+  padding: 0.25em 1em;
+}
+
+.tabs > ul.tabs-toggler > li.active {
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  border-left: 1px solid #cccccc;
+  border-right: 1px solid #cccccc;
+  border-top: 1px solid #cccccc;
+}
+
+.tabs > .active-tab {
+  padding-top: 1em;
+}

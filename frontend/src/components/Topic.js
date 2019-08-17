@@ -1,6 +1,7 @@
 import React from 'react';
 import Toggler from './Toggler';
 import Message from './Message';
+import '../styles/Topic.css';
 
 export default class Topic extends React.Component {
   constructor(props) {

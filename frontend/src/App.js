@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './styles/App.css';
 import WsEventsListener from './WsEventsListener';
 import State from './state/State';
 import Session from './components/Session';

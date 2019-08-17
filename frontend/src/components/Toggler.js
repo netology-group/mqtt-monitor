@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Toggler.css';
 
 export default class Toggler extends React.Component {
   render() {

@@ -1,6 +1,8 @@
 import React from 'react';
 import Toggler from './Toggler';
 import Topic from './Topic';
+import { Tabs, Tab } from './Tabs';
+import '../styles/Session.css';
 
 export default class Session extends React.Component {
   constructor(props) {
@@ -29,22 +31,26 @@ export default class Session extends React.Component {
 
     return (
       <div className="session-details">
-        {this._renderTopics('publishes', 'Publishes')}
-        {this._renderTopics('subscriptions', 'Subscriptions')}
+        <Tabs>
+          <Tab title="Publishes">
+            {this._renderTopics('publishes')}
+          </Tab>
+
+          <Tab title="Subscriptions">
+            {this._renderTopics('subscriptions')}
+          </Tab>
+        </Tabs>
       </div>
     );
   }
 
-  _renderTopics(key, title) {
+  _renderTopics(key) {
     if (this.props[key].length === 0) return null;
 
     return (
-      <div className="topics-container">
-        <h4>{title}:</h4>
-        <ul className="topics">
-          {this.props[key].map(t => this._renderTopic(key, t))}
-        </ul>
-      </div>
+      <ul className="topics">
+        {this.props[key].map(t => this._renderTopic(key, t))}
+      </ul>
     );
   }
 
