@@ -3,16 +3,16 @@ defmodule MqttMonitor.WebsocketHandler do
     @behaviour :cowboy_websocket_handler
   end
 
-  @initial_state %{}
   @idle_timeout 60_000
 
   def init(req, _opts) do
-    {:cowboy_websocket, req, @initial_state, %{idle_timeout: @idle_timeout}}
+    {:cowboy_websocket, req, %{}, %{idle_timeout: @idle_timeout}}
   end
 
   def websocket_init(state) do
     with {:ok, _} <- Registry.register(MqttMonitor.PubSub, "events", []) do
-      {:ok, state}
+      message = %{type: "initial_state", sessions: MqttMonitor.current_sessions()}
+      {:reply, {:text, Jason.encode!(message)}, state}
     end
   end
 

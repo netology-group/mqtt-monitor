@@ -18,7 +18,8 @@ export default class Session {
 
   static addSubscriptions(session, topics) {
     return _.update(session, ['subscriptions'], subscriptions => {
-      return _.concat(subscriptions, topics);
+      const diff = _.differenceBy(topics, subscriptions, _.isEqual);
+      return _.concat(subscriptions, diff);
     });
   }
 

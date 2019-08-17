@@ -23,6 +23,19 @@ defmodule MqttMonitor do
     ]
   end
 
+  def current_sessions do
+    if Code.ensure_loaded?(:vmq_subscriber) do
+      apply(:vmq_subscriber_db, :fold, [&[parse_session(&1) | &2], []])
+    else
+      []
+    end
+  end
+
+  defp parse_session({{_, client_id}, nodes}) do
+    subscriptions = for {_, _, subs} <- nodes, {topics, _} <- subs, do: topics
+    %{client_id: client_id, subscriptions: subscriptions}
+  end
+
   def on_auth_m5(_username, {_, client_id}, properties) do
     publish(%{type: "auth_m5", client_id: client_id, properties: properties})
     :ok

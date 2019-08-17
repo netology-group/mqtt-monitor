@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import State from './state/State';
 import Session from './state/Session';
 import Topic from './state/Topic';
@@ -15,6 +16,9 @@ export default class WsEventsListener {
     const message = JSON.parse(event.data);
 
     switch (message.type) {
+      case 'initial_state':
+        this._handleInitialState(message);
+        break;
       case 'register':
         this._handleRegister(message);
         break;
@@ -64,6 +68,16 @@ export default class WsEventsListener {
         console.warn(`Unknown message type: '${message.type}'`);
         break;
     }
+  }
+
+  _handleInitialState(message) {
+    this.setState(state => {
+      return _.reduce(message.sessions, (acc, session) => {
+        return State.updateSession(acc, session.client_id, s => {
+          return Session.addSubscriptions(s, session.subscriptions);
+        });
+      }, state);
+    });
   }
 
   _handleRegister(message) {
