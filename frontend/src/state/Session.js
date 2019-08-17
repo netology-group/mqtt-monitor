@@ -6,6 +6,7 @@ export default class Session {
     return {
       clientId,
       publishes: [],
+      delivers: [],
       subscriptions: [],
       online: true,
     };
@@ -17,15 +18,13 @@ export default class Session {
 
   static addSubscriptions(session, topics) {
     return _.update(session, ['subscriptions'], subscriptions => {
-      return _.concat(subscriptions, topics.map(t => Topic.build(t)));
+      return _.concat(subscriptions, topics);
     });
   }
 
   static removeSubscriptions(session, topics) {
     return _.update(session, ['subscriptions'], subscriptions => {
-      return _.reject(subscriptions, s => {
-        return this._findTopicIndex(topics, s.topic) !== -1;
-      });
+      return _.differenceBy(subscriptions, topics, _.isEqual);
     });
   }
 
@@ -33,21 +32,17 @@ export default class Session {
     return this._updateTopic(session, 'publishes', topic, updater);
   }
 
-  static updateSubscriptionTopic(session, topic, updater) {
-    return this._updateTopic(session, 'subscriptions', topic, updater);
+  static updateDeliverTopic(session, topic, updater) {
+    return this._updateTopic(session, 'delivers', topic, updater);
   }
 
   static _updateTopic(session, key, topic, updater) {
-    const idx = this._findTopicIndex(session[key], topic);
+    const idx = _.findIndex(session[key], t => _.isEqual(t.topic, topic));
 
     if (idx === -1) {
       return _.update(session, [key], topics => [...topics, updater(Topic.build(topic))]);
     } else {
       return _.update(session, [key, topic, idx], updater);
     }
-  }
-
-  static _findTopicIndex(topics, topic) {
-    return _.findIndex(topics, t => _.isEqual(t.topic, topic));
   }
 }

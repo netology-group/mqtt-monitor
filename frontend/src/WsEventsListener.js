@@ -126,7 +126,7 @@ export default class WsEventsListener {
 
   _handleDeliver(message) {
     this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.updateSubscriptionTopic(session, message.topic, topic => {
+      return Session.updateDeliverTopic(session, message.topic, topic => {
         return Topic.addMessage(topic, message);
       });
     }));

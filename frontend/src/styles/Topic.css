@@ -6,6 +6,7 @@ ul.topics {
 ul.topics > li {
   border-left: 1px solid #cccccc;
   margin-left: 0.5em;
+  margin-bottom: 0.25em;
 }
 
 ul.messages {

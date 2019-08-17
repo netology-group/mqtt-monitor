@@ -32,25 +32,25 @@ export default class Session extends React.Component {
     return (
       <div className="session-details">
         <Tabs>
-          <Tab title="Publishes">
-            {this._renderTopics('publishes')}
+          <Tab id="publishes" title="Publishes">
+            <ul className="topics">
+              {this.props.publishes.map(t => this._renderTopic('publishes', t))}
+            </ul>
           </Tab>
 
-          <Tab title="Subscriptions">
-            {this._renderTopics('subscriptions')}
+          <Tab id="delivers" title="Delivers">
+            <ul className="topics">
+              {this.props.delivers.map(t => this._renderTopic('delivers', t))}
+            </ul>
+          </Tab>
+
+          <Tab id="subscriptions" title="Subscriptions">
+            <ul className="subscriptions">
+              {this.props.subscriptions.map(this._renderSubscription.bind(this))}
+            </ul>
           </Tab>
         </Tabs>
       </div>
-    );
-  }
-
-  _renderTopics(key) {
-    if (this.props[key].length === 0) return null;
-
-    return (
-      <ul className="topics">
-        {this.props[key].map(t => this._renderTopic(key, t))}
-      </ul>
     );
   }
 
@@ -63,6 +63,10 @@ export default class Session extends React.Component {
         onToggle={value => this._handleTopicToggle(key, topic.topic, value)}
       />
     );
+  }
+
+  _renderSubscription(subscription) {
+    return (<li key={subscription}>{subscription.join('/')}</li>);
   }
 
   _handleToggle(open) {
