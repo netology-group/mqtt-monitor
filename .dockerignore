@@ -1,6 +1,6 @@
 _build/
 .elixir_ls/
 deps/
-frontend/
+frontend/node_modules/
 .formatter.exs
 README.md

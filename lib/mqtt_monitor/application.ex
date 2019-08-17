@@ -16,11 +16,21 @@ defmodule MqttMonitor.Application do
   end
 
   @port 4040
-  @routes [{:_, [{"/", MqttMonitor.WebsocketHandler, []}]}]
+
+  @routes [
+    {:_,
+     [
+       {"/ws", MqttMonitor.WebsocketHandler, []},
+       {"/", :cowboy_static,
+        {:priv_file, :mqtt_monitor, "public/index.html", [{:mimetypes, {"text", "html", []}}]}},
+       {"/[...]", :cowboy_static,
+        {:priv_dir, :mqtt_monitor, "public", [{:mimetypes, :cow_mimetypes, :web}]}}
+     ]}
+  ]
 
   defp start_cowboy do
     :cowboy.start_clear(
-      :mqtt_monitor_ws_listener,
+      :mqtt_monitor,
       [port: @port],
       %{env: %{dispatch: :cowboy_router.compile(@routes)}}
     )
