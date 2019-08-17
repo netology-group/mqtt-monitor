@@ -108,7 +108,7 @@ export default class WsEventsListener {
 
   _handleSubscribe(message) {
     this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.addSubscriptions(session, message.topics);
+      return Session.addSubscriptions(session, message.subscriptions);
     }));
   }
 
@@ -118,7 +118,7 @@ export default class WsEventsListener {
 
   _handleUnsubscribe(message) {
     this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.removeSubscriptions(session, message.topics);
+      return Session.removeSubscriptions(session, message.subscriptions);
     }));
   }
 

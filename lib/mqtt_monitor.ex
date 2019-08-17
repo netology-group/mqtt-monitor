@@ -32,8 +32,8 @@ defmodule MqttMonitor do
   end
 
   defp parse_session({{_, client_id}, nodes}) do
-    subscriptions = for {_, _, subs} <- nodes, {topics, _} <- subs, do: topics
-    %{client_id: client_id, subscriptions: subscriptions}
+    subscriptions = for {_, _, subs} <- nodes, sub <- subs, do: sub
+    %{client_id: client_id, subscriptions: dump_subscriptions(subscriptions)}
   end
 
   def on_auth_m5(_username, {_, client_id}, properties) do
@@ -66,32 +66,42 @@ defmodule MqttMonitor do
     :ok
   end
 
-  def on_subscribe(_, {_, client_id}, topics) do
-    publish(%{type: "subscribe", client_id: client_id, topics: dump_topics(topics)})
+  def on_subscribe(_, {_, client_id}, subscriptions) do
+    publish(%{
+      type: "subscribe",
+      client_id: client_id,
+      subscriptions: dump_subscriptions(subscriptions)
+    })
+
     :ok
   end
 
-  def on_subscribe_m5(_, {_, client_id}, topics, properties) do
+  def on_subscribe_m5(_, {_, client_id}, subscriptions, properties) do
     publish(%{
       type: "subscribe_m5",
       client_id: client_id,
-      topics: dump_topics(topics),
+      subscriptions: dump_subscriptions(subscriptions),
       properties: properties
     })
 
     :ok
   end
 
-  def on_unsubscribe(_, {_, client_id}, topics) do
-    publish(%{type: "unsubscribe", client_id: client_id, topics: dump_topics(topics)})
+  def on_unsubscribe(_, {_, client_id}, subscriptions) do
+    publish(%{
+      type: "unsubscribe",
+      client_id: client_id,
+      subscriptions: dump_subscriptions(subscriptions)
+    })
+
     :ok
   end
 
-  def on_unsubscribe_m5(_, {_, client_id}, topics, properties) do
+  def on_unsubscribe_m5(_, {_, client_id}, subscriptions, properties) do
     publish(%{
       type: "unsubscribe_m5",
       client_id: client_id,
-      topics: dump_topics(topics),
+      subscriptions: dump_subscriptions(subscriptions),
       properties: properties
     })
 
@@ -183,7 +193,15 @@ defmodule MqttMonitor do
     end)
   end
 
-  defp dump_topics(topics) do
-    for {topic, _} <- topics, do: topic
+  defp dump_subscriptions(subscriptions) do
+    for {topic, props} <- subscriptions do
+      qos =
+        case props do
+          {qos, _} -> qos
+          qos -> qos
+        end
+
+      %{topic: topic, qos: qos}
+    end
   end
 end

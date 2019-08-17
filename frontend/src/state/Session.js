@@ -16,17 +16,21 @@ export default class Session {
     return _.set(session, ['online'], value);
   }
 
-  static addSubscriptions(session, topics) {
-    return _.update(session, ['subscriptions'], subscriptions => {
-      const diff = _.differenceBy(topics, subscriptions, _.isEqual);
-      return _.concat(subscriptions, diff);
+  static addSubscriptions(session, subscriptions) {
+    return _.update(session, ['subscriptions'], currentSubscriptions => {
+      const diff = _.differenceBy(subscriptions, currentSubscriptions, this._compareSubscriptions);
+      return _.concat(currentSubscriptions, diff);
     });
   }
 
-  static removeSubscriptions(session, topics) {
-    return _.update(session, ['subscriptions'], subscriptions => {
-      return _.differenceBy(subscriptions, topics, _.isEqual);
+  static removeSubscriptions(session, subscriptions) {
+    return _.update(session, ['subscriptions'], currentSubscriptions => {
+      return _.differenceBy(currentSubscriptions, subscriptions, this._compareSubscriptions);
     });
+  }
+
+  static _compareSubscriptions(a, b) {
+    return _.isEqual(a && a.topic, b && b.topic);
   }
 
   static updatePublishTopic(session, topic, updater) {

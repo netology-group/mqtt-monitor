@@ -66,7 +66,13 @@ export default class Session extends React.Component {
   }
 
   _renderSubscription(subscription) {
-    return (<li key={subscription}>{subscription.join('/')}</li>);
+    return (
+      <li key={subscription.topic}>
+        {subscription.topic.join('/')}
+        &nbsp;
+        <span className="subscription-info">q{subscription.qos}</span>
+      </li>
+    );
   }
 
   _handleToggle(open) {
