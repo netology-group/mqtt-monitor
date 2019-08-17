@@ -76,6 +76,6 @@ export default class Session extends React.Component {
   }
 
   _handleToggle(open) {
-    this.setState(state => ({ ...state, open }));
+    this.setState({ open });
   }
 }

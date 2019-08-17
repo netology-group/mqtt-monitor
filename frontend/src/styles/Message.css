@@ -1,0 +1,19 @@
+.message > .metadata {
+  color: #333;
+  font-size: 10pt;
+  margin: 0.25em 0;
+}
+
+.message > .payload > pre {
+  background-color: #eee;
+  margin: 0;
+  max-height: 200px;
+  overflow: auto;
+  padding: 1em;
+}
+
+.message .properties {
+  background-color: #eeeeee;
+  font-size: 10pt;
+  padding: 1em;
+}

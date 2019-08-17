@@ -30,6 +30,6 @@ export default class Topic extends React.Component {
   }
 
   _handleToggle(open) {
-    this.setState(state => ({...state, open}));
+    this.setState({ open });
   }
 }
