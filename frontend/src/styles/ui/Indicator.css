@@ -1,0 +1,12 @@
+.indicator {
+  display: inline-block;
+  margin-right: 0.25em;
+}
+
+.indicator.indicator-on {
+  color: #0f0;
+}
+
+.indicator.indicator-off {
+  color: #f00;
+}

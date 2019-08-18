@@ -74,7 +74,7 @@ export default class Message extends React.Component {
   }
 
   _renderProperty(key, value) {
-    return (<React.Fragment key={key}>{key}: {value}<br /></React.Fragment>);
+    return (<React.Fragment key={key}><i>{key}:</i> {value}<br /></React.Fragment>);
   }
 
   _handlePropertiesToggle(showProperties) {

@@ -1,8 +1,9 @@
 import React from 'react';
-import './styles/App.css';
-import WsEventsListener from './WsEventsListener';
-import State from './state/State';
+import Indicator from './components/ui/Indicator';
 import Session from './components/Session';
+import State from './state/State';
+import WsEventsListener from './WsEventsListener';
+import './styles/App.css';
 
 const WS_URL = function () {
   // Custom value from REACT_APP_WS_URL passed through <meta name="ws-url" /> tag.
@@ -24,10 +25,18 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <ul className="sessions">
-          {this.state.sessions.map(s => this._renderSession(s))}
-        </ul>
+      <div className="app">
+        <header>
+          <h1>
+            MQTT Monitor&nbsp;
+            <Indicator on={this.state.connected} />
+          </h1>
+        </header>
+        <main>
+          <ul className="sessions">
+            {this.state.sessions.map(s => this._renderSession(s))}
+          </ul>
+        </main>
       </div>
     );
   }

@@ -3,16 +3,40 @@ import State from './state/State';
 import Session from './state/Session';
 import Topic from './state/Topic';
 
+const RECONNECT_INTERVAL = 10000;
+
 export default class WsEventsListener {
   constructor(url, setState) {
+    this.url = url;
     this.setState = setState;
-
-    const socket = new WebSocket(url);
-    setInterval(() => socket.send("ping"), 10000);
-    socket.addEventListener('message', this._handleWebSocketEvent.bind(this));
+    this._initWebSocket();
   }
 
-  _handleWebSocketEvent(event) {
+  _initWebSocket() {
+    this.socket = new WebSocket(this.url);
+    this.socket.onopen = this._handleOpen.bind(this);
+    this.socket.onclose = this._handleClose.bind(this);
+    this.socket.onerror = this._handleError.bind(this);
+    this.socket.onmessage = this._handleMessage.bind(this);
+  }
+
+  _handleOpen() {
+    setInterval(() => this.socket.send("ping"), 10000);
+    this.setState({ connected: true });
+  }
+
+  _handleClose() {
+    setTimeout(() => this._initWebSocket(), RECONNECT_INTERVAL);
+    this.setState({ connected: false });
+  }
+
+  _handleError(event) {
+    console.error("WebSocket error: ", event);
+    setTimeout(() => this._initWebSocket(), RECONNECT_INTERVAL);
+    this.setState({ connected: false });
+  }
+
+  _handleMessage(event) {
     const message = JSON.parse(event.data);
 
     switch (message.type) {

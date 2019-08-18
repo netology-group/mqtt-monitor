@@ -3,7 +3,7 @@ import Session from './Session';
 
 export default class State {
   static build() {
-    return { sessions: [] };
+    return { connected: false, sessions: [] };
   }
 
   static addSession(state, clientId) {

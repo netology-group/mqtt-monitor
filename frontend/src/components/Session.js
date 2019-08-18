@@ -1,7 +1,8 @@
 import React from 'react';
-import Toggler from './Toggler';
+import Indicator from './ui/Indicator';
+import Toggler from './ui/Toggler';
 import Topic from './Topic';
-import { Tabs, Tab } from './Tabs';
+import { Tabs, Tab } from './ui/Tabs';
 import '../styles/Session.css';
 
 export default class Session extends React.Component {
@@ -14,16 +15,11 @@ export default class Session extends React.Component {
     return (
       <li>
         <Toggler open={this.state.open} onToggle={this._handleToggle.bind(this)} />
-        {this._renderOnlineIndicator()}
+        <Indicator on={this.props.online} />
         {this.props.clientId}
         {this._renderDetails()}
       </li>
     );
-  }
-
-  _renderOnlineIndicator() {
-    const klass = `indicator indicator-${this.props.online ? 'on' : 'off'}`;
-    return (<span className={klass}>&#9679;</span>);
   }
 
   _renderDetails() {

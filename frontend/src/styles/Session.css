@@ -1,18 +1,6 @@
-.indicator {
-  display: inline-block;
-  margin-right: 0.25em;
-}
-
-.indicator.indicator-on {
-  color: #0f0;
-}
-
-.indicator.indicator-off {
-  color: #f00;
-}
-
 ul.sessions {
   list-style: none;
+  margin: 0;
   padding: 0;
 }
 
