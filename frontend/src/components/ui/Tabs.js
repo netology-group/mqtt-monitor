@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
-import '../../styles/ui/Tabs.css';
+
+import './Tabs.css';
 
 export class Tab extends React.Component {}
 

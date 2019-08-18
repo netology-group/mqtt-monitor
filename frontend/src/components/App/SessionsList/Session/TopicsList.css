@@ -1,0 +1,10 @@
+ul.topics {
+  list-style: none;
+  padding: 0;
+}
+
+ul.topics > li {
+  border-left: 1px solid #cccccc;
+  margin-left: 0.5em;
+  margin-bottom: 0.25em;
+}

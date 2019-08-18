@@ -1,18 +1,13 @@
-import _ from 'lodash';
-import State from './state/State';
-import Session from './state/Session';
-import Topic from './state/Topic';
-
 const RECONNECT_INTERVAL = 10000;
+const PING = JSON.stringify({ type: "ping" });
 
 export default class WsEventsListener {
-  constructor(url, setState) {
+  constructor(url, model) {
     this.url = url;
-    this.setState = setState;
-    this._initWebSocket();
+    this.model = model;
   }
 
-  _initWebSocket() {
+  connect() {
     this.socket = new WebSocket(this.url);
     this.socket.onopen = this._handleOpen.bind(this);
     this.socket.onclose = this._handleClose.bind(this);
@@ -21,25 +16,27 @@ export default class WsEventsListener {
   }
 
   _handleOpen() {
-    setInterval(() => this.socket.send("ping"), 10000);
-    this.setState({ connected: true });
+    this.model.changeConnectionState(true);
+    this.pingInterval = setInterval(() => this.socket.send(PING), 10000);
   }
 
   _handleClose() {
-    setTimeout(() => this._initWebSocket(), RECONNECT_INTERVAL);
-    this.setState({ connected: false });
+    this.model.changeConnectionState(false);
+    this.pingInterval = clearInterval(this.pingInterval);
+    setTimeout(() => this.connect(), RECONNECT_INTERVAL);
   }
 
   _handleError(event) {
     console.error("WebSocket error: ", event);
-    setTimeout(() => this._initWebSocket(), RECONNECT_INTERVAL);
-    this.setState({ connected: false });
+    this._handleClose();
   }
 
   _handleMessage(event) {
     const message = JSON.parse(event.data);
 
     switch (message.type) {
+      case 'pong':
+        break;
       case 'initial_state':
         this._handleInitialState(message);
         break;
@@ -95,19 +92,15 @@ export default class WsEventsListener {
   }
 
   _handleInitialState(message) {
-    this.setState(state => {
-      return _.reduce(message.sessions, (acc, session) => {
-        return State.updateSession(acc, session.client_id, s => {
-          return Session.addSubscriptions(s, session.subscriptions);
-        });
-      }, state);
-    });
+    for (const session of message.sessions) {
+      this.model
+        .findOrAddSession(session.client_id)
+        .addSubscriptions(session.subscriptions);
+    }
   }
 
   _handleRegister(message) {
-    this.setState(state => {
-      return State.addSession(state, message.client_id);
-    });
+    this.model.findOrAddSession(message.client_id);
   }
 
   _handleRegisterM5(message) {
@@ -115,15 +108,15 @@ export default class WsEventsListener {
   }
 
   _handleClientWakeUp(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.toggleOnline(session, true);
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .toggleOnline(true);
   }
 
   _handleClientOffline(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.toggleOnline(session, false);
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .toggleOnline(false);
   }
 
   _handleClientGone(message) {
@@ -131,9 +124,9 @@ export default class WsEventsListener {
   }
 
   _handleSubscribe(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.addSubscriptions(session, message.subscriptions);
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .addSubscriptions(message.subscriptions);
   }
 
   _handleSubscribeM5(message) {
@@ -141,9 +134,9 @@ export default class WsEventsListener {
   }
 
   _handleUnsubscribe(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.removeSubscriptions(session, message.subscriptions);
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .removeSubscriptions(message.subscriptions);
   }
 
   _handleUnsubscribeM5(message) {
@@ -151,11 +144,10 @@ export default class WsEventsListener {
   }
 
   _handlePublish(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.updatePublishTopic(session, message.topic, topic => {
-        return Topic.addMessage(topic, message, false);
-      });
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .findOrAddPublishTopic(message.topic)
+      .addMessage(message, false);
   }
 
   _handlePublishM5(message) {
@@ -175,11 +167,10 @@ export default class WsEventsListener {
   }
 
   _handleDeliverImpl(message, offline) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.updateDeliverTopic(session, message.topic, topic => {
-        return Topic.addMessage(topic, message, offline);
-      });
-    }));
+    this.model
+      .findOrAddSession(message.client_id)
+      .findOrAddDeliverTopic(message.topic)
+      .addMessage(message, offline);
   }
 
   _handleMessageDrop(message) {
