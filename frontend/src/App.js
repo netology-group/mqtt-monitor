@@ -4,7 +4,16 @@ import WsEventsListener from './WsEventsListener';
 import State from './state/State';
 import Session from './components/Session';
 
-const WS_URL = 'ws://localhost:4040/ws';
+const WS_URL = function () {
+  // Custom value from REACT_APP_WS_URL passed through <meta name="ws-url" /> tag.
+  const metaWsUrlTag = document.head.querySelector("meta[name~=ws-url][content]");
+  if (metaWsUrlTag && metaWsUrlTag.content !== '') return metaWsUrlTag.content;
+
+  // Default value: ws://CURRENT_BASE_URL/ws
+  var ws_url = new URL('/ws', window.location.href);
+  ws_url.protocol = ws_url.protocol.replace('http', 'ws');
+  return ws_url;
+}();
 
 export default class App extends React.Component {
   constructor(props) {

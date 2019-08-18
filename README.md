@@ -14,7 +14,7 @@ A plugin for VerneMQ that visualizes MQTT events for each session.
 ### Frontend
 
 1. Run `./docker/develop.run.sh` to start the backend.
-2. Run `cd frontend && yarn start`. It will start the development server with hot code reload and open up the browser.
+2. Run `export REACT_APP_WS_URL=ws://localhost:4040/ws && cd frontend && yarn start`. It will start the development server with hot code reload and open up the browser.
 
 ### Backend
 
