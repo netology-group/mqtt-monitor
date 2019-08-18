@@ -4,6 +4,10 @@
   margin: 0.25em 0;
 }
 
+.message > .metadata .offline {
+  color: #f00;
+}
+
 .message > .payload > pre {
   background-color: #eee;
   margin: 0;

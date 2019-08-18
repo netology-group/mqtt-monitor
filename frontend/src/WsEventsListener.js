@@ -129,7 +129,7 @@ export default class WsEventsListener {
   _handlePublish(message) {
     this.setState(state => State.updateSession(state, message.client_id, session => {
       return Session.updatePublishTopic(session, message.topic, topic => {
-        return Topic.addMessage(topic, message);
+        return Topic.addMessage(topic, message, false);
       });
     }));
   }
@@ -139,19 +139,23 @@ export default class WsEventsListener {
   }
 
   _handleDeliver(message) {
-    this.setState(state => State.updateSession(state, message.client_id, session => {
-      return Session.updateDeliverTopic(session, message.topic, topic => {
-        return Topic.addMessage(topic, message);
-      });
-    }));
+    this._handleDeliverImpl(message, false);
   }
 
   _handleDeliverM5(message) {
-    this._handleDeliver(message);
+    this._handleDeliverImpl(message, false);
   }
 
   _handleOfflineMessage(message) {
-    this._handleDeliver(message);
+    this._handleDeliverImpl(message, true);
+  }
+
+  _handleDeliverImpl(message, offline) {
+    this.setState(state => State.updateSession(state, message.client_id, session => {
+      return Session.updateDeliverTopic(session, message.topic, topic => {
+        return Topic.addMessage(topic, message, offline);
+      });
+    }));
   }
 
   _handleMessageDrop(message) {

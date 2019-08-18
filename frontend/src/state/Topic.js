@@ -6,8 +6,15 @@ export default class Topic {
     return { topic, messages: [] };
   }
 
-  static addMessage(topic, message) {
-    const msg = Message.build(message.payload, message.timestamp, message.qos, message.retain);
+  static addMessage(topic, message, offline) {
+    const msg = Message.build(
+      message.payload,
+      message.timestamp,
+      message.qos,
+      message.retain,
+      offline
+    );
+
     return _.update(topic, ['messages'], messages => [msg, ...messages]);
   }
 }

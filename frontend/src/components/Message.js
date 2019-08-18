@@ -16,6 +16,7 @@ export default class Message extends React.Component {
           <time>{this.props.timestamp.toUTCString()}</time>
           {this._renderQos()}
           {this._renderRetain()}
+          {this._renderOffline()}
           &nbsp;|&nbsp;{this.props.payloadType}
           {this._renderPropertiesToggler()}
         </div>
@@ -38,6 +39,11 @@ export default class Message extends React.Component {
     if (typeof(this.props.retain) === 'undefined') return null;
     const retain = this.props.retain ? 1 : 0;
     return (<span>,&nbsp;r{retain}</span>);
+  }
+
+  _renderOffline() {
+    if (!this.props.offline) return null;
+    return (<span>,&nbsp;<span className="offline">offline</span></span>);
   }
 
   _renderPropertiesToggler() {

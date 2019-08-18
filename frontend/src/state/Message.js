@@ -1,6 +1,12 @@
 export default class Message {
-  static build(payload, timestamp, qos, retain) {
-    return {...this._parsePayload(payload), timestamp: new Date(timestamp), qos, retain};
+  static build(payload, timestamp, qos, retain, offline) {
+    return {
+      ...this._parsePayload(payload),
+      timestamp: new Date(timestamp),
+      qos,
+      retain,
+      offline
+    };
   }
 
   static _parsePayload(payload) {
